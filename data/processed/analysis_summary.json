@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "period_start": "2025-01-01",
+    "period_end": "2025-12-30",
+    "currency": "IDR",
+    "synthetic_data": true
+  },
+  "overall_kpis": {
+    "total_budget": 170410000000.0,
+    "total_actual_cost": 172583200000.0,
+    "variance": 2173200000.0,
+    "variance_pct": 1.2752772724605363,
+    "transaction_count": 120,
+    "over_budget_count": 60,
+    "under_budget_count": 60,
+    "on_budget_count": 0
+  },
+  "department_summary": [
+    {
+      "department": "Logistics",
+      "budget": 36180000000.0,
+      "actual_cost": 37082850000.0,
+      "variance": 902850000.0,
+      "variance_pct": 2.4954394693200666,
+      "transaction_count": 24
+    },
+    {
+      "department": "Heavy Equipment",
+      "budget": 30640000000.0,
+      "actual_cost": 31452700000.0,
+      "variance": 812700000.0,
+      "variance_pct": 2.6524151436031334,
+      "transaction_count": 24
+    },
+    {
+      "department": "Site Infrastructure",
+      "budget": 34655000000.0,
+      "actual_cost": 35059150000.0,
+      "variance": 404150000.0,
+      "variance_pct": 1.1662097821382196,
+      "transaction_count": 24
+    },
+    {
+      "department": "Mining Operations",
+      "budget": 34195000000.0,
+      "actual_cost": 34582650000.0,
+      "variance": 387650000.0,
+      "variance_pct": 1.133645269776283,
+      "transaction_count": 24
+    },
+    {
+      "department": "HSE",
+      "budget": 34740000000.0,
+      "actual_cost": 34405850000.0,
+      "variance": -334150000.0,
+      "variance_pct": -0.961859527921704,
+      "transaction_count": 24
+    }
+  ],
+  "category_summary": [
+    {
+      "category": "Diesel Fuel",
+      "budget": 27110000000.0,
+      "actual_cost": 28758900000.0,
+      "variance": 1648900000.0,
+      "variance_pct": 6.082257469568425,
+      "transaction_count": 18
+    },
+    {
+      "category": "Spare Parts",
+      "budget": 7680000000.0,
+      "actual_cost": 8269000000.0,
+      "variance": 589000000.0,
+      "variance_pct": 7.669270833333333,
+      "transaction_count": 6
+    },
+    {
+      "category": "Safety Training",
+      "budget": 8110000000.0,
+      "actual_cost": 8674000000.0,
+      "variance": 564000000.0,
+      "variance_pct": 6.954377311960543,
+      "transaction_count": 6
+    },
+    {
+      "category": "Equipment Rental",
+      "budget": 35445000000.0,
+      "actual_cost": 35853200000.0,
+      "variance": 408200000.0,
+      "variance_pct": 1.1516433911694175,
+      "transaction_count": 24
+    },
+    {
+      "category": "Blasting Materials",
+      "budget": 5840000000.0,
+      "actual_cost": 6180800000.0,
+      "variance": 340800000.0,
+      "variance_pct": 5.835616438356165,
+      "transaction_count": 6
+    },
+    {
+      "category": "Safety Equipment",
+      "budget": 7370000000.0,
+      "actual_cost": 7594900000.0,
+      "variance": 224900000.0,
+      "variance_pct": 3.051560379918589,
+      "transaction_count": 6
+    },
+    {
+      "category": "Hauling Transportation",
+      "budget": 9730000000.0,
+      "actual_cost": 9923200000.0,
+      "variance": 193200000.0,
+      "variance_pct": 1.9856115107913668,
+      "transaction_count": 6
+    },
+    {
+      "category": "Drilling Consumables",
+      "budget": 8630000000.0,
+      "actual_cost": 8784600000.0,
+      "variance": 154600000.0,
+      "variance_pct": 1.7914252607184242,
+      "transaction_count": 6
+    },
+    {
+      "category": "Camp Maintenance",
+      "budget": 8500000000.0,
+      "actual_cost": 8598600000.0,
+      "variance": 98600000.0,
+      "variance_pct": 1.16,
+      "transaction_count": 6
+    },
+    {
+      "category": "Emergency Response",
+      "budget": 9555000000.0,
+      "actual_cost": 9443700000.0,
+      "variance": -111300000.0,
+      "variance_pct": -1.1648351648351647,
+      "transaction_count": 6
+    },
+    {
+      "category": "Site Utilities",
+      "budget": 9280000000.0,
+      "actual_cost": 9152400000.0,
+      "variance": -127600000.0,
+      "variance_pct": -1.375,
+      "transaction_count": 6
+    },
+    {
+      "category": "Equipment Maintenance",
+      "budget": 9350000000.0,
+      "actual_cost": 9187400000.0,
+      "variance": -162600000.0,
+      "variance_pct": -1.73903743315508,
+      "transaction_count": 6
+    },
+    {
+      "category": "Road Maintenance",
+      "budget": 8405000000.0,
+      "actual_cost": 8162250000.0,
+      "variance": -242750000.0,
+      "variance_pct": -2.888161808447353,
+      "transaction_count": 6
+    },
+    {
+      "category": "Tire Replacement",
+      "budget": 5700000000.0,
+      "actual_cost": 5307000000.0,
+      "variance": -393000000.0,
+      "variance_pct": -6.894736842105263,
+      "transaction_count": 6
+    },
+    {
+      "category": "Environmental Monitoring",
+      "budget": 9705000000.0,
+      "actual_cost": 8693250000.0,
+      "variance": -1011750000.0,
+      "variance_pct": -10.425038639876352,
+      "transaction_count": 6
+    }
+  ]
+}

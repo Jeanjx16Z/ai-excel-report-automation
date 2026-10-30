@@ -111,6 +111,11 @@ Pipeline melakukan validasi fail-fast, menghitung KPI dengan konvensi `variance 
 - `data/processed/department_summary.csv`: agregasi per departemen;
 - `data/processed/category_summary.csv`: agregasi per kategori.
 
+Validasi menolak file yang hilang/rusak, ekstensi selain `.xlsx`, schema atau nilai
+invalid, nilai negatif, kombinasi department-category yang tidak dikenal, dan transaksi
+duplikat. Tahap cleaning menormalisasi tanggal serta memangkas whitespace awal/akhir pada
+teks tanpa mengubah input asli.
+
 `variance_pct` dihitung dengan rumus `variance / budget * 100`. Variance positif berarti over-budget, variance negatif berarti under-budget, dan variance nol berarti on-budget. Jika budget nol, `variance_pct` bernilai null/kosong karena persentase tidak terdefinisi. JSON tidak memuat transaksi mentah.
 
 ## Membuat Management Report
@@ -127,7 +132,22 @@ Mode Gemini harus dipilih secara eksplisit:
 python src/analyze_costs.py --mode gemini
 ```
 
-Laporan dibuat di `reports/management_report.md`. Jika Gemini gagal atau konfigurasi API tidak tersedia, pipeline membuat laporan menggunakan template offline dan menandainya sebagai fallback, bukan sebagai output AI.
+Laporan dibuat di:
+
+- `reports/management_report.md`: management report yang mudah dibaca;
+- `reports/management_report.xlsx`: workbook dengan sheet KPI, agregasi departemen,
+  agregasi kategori, dan executive summary. Nilai KPI pada workbook disimpan sebagai
+  angka agar dapat diproses kembali.
+
+Path keduanya dapat ditentukan secara eksplisit:
+
+```powershell
+python src/analyze_costs.py --report-path reports/custom_report.md --excel-report-path reports/custom_report.xlsx
+```
+
+Jika Gemini gagal atau konfigurasi API tidak tersedia, pipeline tetap membuat kedua
+laporan menggunakan template offline dan menandainya sebagai fallback, bukan sebagai
+output AI.
 
 Gemini hanya menerima isi agregat `data/processed/analysis_summary.json`, bukan transaksi mentah. Structured output dibatasi pada executive summary, maksimal tiga findings, maksimal tiga potential risks, dan maksimal tiga recommendations. Prompt melarang model mengarang nominal, penyebab pembengkakan, atau fakta operasional. Semua angka KPI pada laporan selalu dirender langsung dari hasil Python; interpretasi AI tidak boleh mengubahnya. Data tetap dinyatakan sintetis dan bukan data asli perusahaan.
 
@@ -137,12 +157,22 @@ Gemini hanya menerima isi agregat `data/processed/analysis_summary.json`, bukan 
 python -m unittest discover -s tests -v
 ```
 
+Test suite menggunakan dataset sintetis dan temporary directory. Jalur Gemini diuji
+dengan fake/mock client sehingga automated tests tidak melakukan network call. Verifikasi
+Milestone 4 terakhir menghasilkan 37 test lulus.
+
 ## Pemeriksaan Sintaks
 
 ```powershell
 python -m compileall -q src tests
 ```
 
-## Scope Milestone 3
+## Batasan MVP
 
-Milestone ini mencakup laporan Markdown, ringkasan offline deterministik, dan integrasi Gemini opsional dengan structured output serta fallback. AI Agent, tool calling, n8n, UI, database, dan deployment belum termasuk.
+MVP mencakup input Excel `.xlsx`, validasi dan cleaning terkontrol, KPI deterministik,
+output JSON/CSV, laporan Markdown dan Excel, serta interpretasi Gemini opsional dengan
+structured output dan fallback. Python/Pandas tetap menjadi satu-satunya sumber kebenaran
+angka; Gemini hanya menerima agregat dan tidak menerima transaksi mentah.
+
+AI Agent, tool calling, n8n, PDF, web interface, FastAPI, Next.js, authentication,
+database, Docker, dan deployment belum termasuk dalam MVP.

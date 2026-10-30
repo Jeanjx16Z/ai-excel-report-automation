@@ -56,25 +56,25 @@ Konvensi: `variance = actual_cost - budget`; variance positif berarti over-budge
 
 ## Executive Summary
 
-Analisis biaya operasional pertambangan untuk periode 2025-01-01 hingga 2025-12-30 menunjukkan total biaya aktual sebesar IDR 172.583.200.000, melebihi total anggaran sebesar IDR 170.410.000.000. Hal ini menghasilkan varian positif sebesar IDR 2.173.200.000 atau 1.275% di atas anggaran. Sebanyak 60 transaksi tercatat melebihi anggaran, sementara 60 transaksi lainnya berada di bawah anggaran.
+Analisis biaya operasional pertambangan untuk periode 2025-01-01 hingga 2025-12-30 menunjukkan total biaya aktual sebesar Rp172.583.200.000, melebihi total anggaran Rp170.410.000.000. Variansi positif ini mencapai Rp2.173.200.000 atau 1.28%. Departemen Logistik dan Heavy Equipment menjadi kontributor utama pembengkakan biaya, sementara kategori Diesel Fuel dan Spare Parts menunjukkan variansi biaya tertinggi.
 
 ## Key Findings
 
-- Secara keseluruhan, biaya operasional perusahaan melebihi anggaran sebesar IDR 2.173.200.000 atau 1.275% (fact).
-- Kategori 'Diesel Fuel' merupakan kontributor terbesar terhadap pembengkakan biaya dengan varian positif sebesar IDR 1.648.900.000 atau 6.08% di atas anggaran (fact).
-- Departemen 'Logistics' dan 'Heavy Equipment' menunjukkan varian biaya positif tertinggi di antara departemen, masing-masing sebesar IDR 902.850.000 (2.49%) dan IDR 812.700.000 (2.65%) (fact).
+- Total biaya operasional aktual melebihi anggaran sebesar Rp2.173.200.000, dengan persentase variansi 1.28% untuk periode yang dianalisis.
+- Departemen Logistik dan Heavy Equipment menunjukkan variansi biaya positif terbesar, masing-masing sebesar Rp902.850.000 (2.50%) dan Rp812.700.000 (2.65%).
+- Kategori pengeluaran Diesel Fuel dan Spare Parts memiliki variansi biaya positif tertinggi, yaitu Rp1.648.900.000 (6.08%) dan Rp589.000.000 (7.67%), yang secara signifikan berkontribusi pada pembengkakan biaya keseluruhan.
 
 ## Potential Risks
 
-- **Hypothesis:** Pembengkakan biaya yang berkelanjutan, terutama pada kategori vital seperti 'Diesel Fuel' dan 'Spare Parts', dapat berdampak negatif pada profitabilitas dan arus kas perusahaan jika tidak dikelola secara efektif (hypothesis).
-- **Hypothesis:** Varian biaya yang signifikan pada 'Spare Parts' (7.66%) dan 'Safety Training' (6.95%) mungkin mengindikasikan adanya inefisiensi dalam proses pengadaan atau kebutuhan yang tidak terduga, yang berpotensi mengganggu operasional atau kepatuhan keselamatan (hypothesis).
-- **Hypothesis:** Keseimbangan antara transaksi yang melebihi anggaran dan di bawah anggaran (masing-masing 60) menunjukkan kurangnya konsistensi dalam kepatuhan anggaran di berbagai area, yang dapat menyebabkan ketidakpastian dalam perencanaan keuangan di masa mendatang (hypothesis).
+- **Hypothesis:** Pembengkakan biaya yang berkelanjutan, terutama pada kategori kunci seperti Diesel Fuel dan Spare Parts, dapat mengikis profitabilitas perusahaan dan stabilitas keuangan jangka panjang.
+- **Hypothesis:** Variansi biaya yang signifikan di departemen Logistik dan Heavy Equipment mungkin mengindikasikan inefisiensi operasional atau tantangan tak terduga dalam pengelolaan aset dan rantai pasok.
+- **Hypothesis:** Akurasi anggaran yang kurang optimal, seperti yang ditunjukkan oleh banyaknya transaksi di atas anggaran (60 dari 120), dapat menyebabkan kesulitan dalam perencanaan keuangan dan alokasi sumber daya di masa mendatang.
 
 ## Actionable Recommendations
 
-1. Melakukan audit mendalam terhadap konsumsi dan proses pengadaan 'Diesel Fuel' untuk mengidentifikasi peluang efisiensi dan negosiasi harga yang lebih baik.
-2. Mengkaji ulang anggaran dan pola pengeluaran untuk 'Spare Parts' dan 'Safety Training' guna memastikan alokasi yang realistis dan mengidentifikasi potensi penghematan tanpa mengorbankan kualitas atau keselamatan.
-3. Menerapkan kontrol biaya yang lebih ketat dan tinjauan anggaran berkala untuk departemen 'Logistics' dan 'Heavy Equipment' untuk memastikan kepatuhan anggaran dan mengidentifikasi penyebab utama pembengkakan biaya.
+1. Lakukan analisis mendalam terhadap penyebab variansi biaya pada kategori Diesel Fuel dan Spare Parts, serta departemen Logistik dan Heavy Equipment untuk mengidentifikasi akar masalah.
+2. Terapkan langkah-langkah pengendalian biaya yang spesifik, seperti optimasi rute logistik, pemantauan konsumsi bahan bakar, dan negosiasi ulang kontrak dengan pemasok suku cadang.
+3. Tinjau dan perbaiki proses penyusunan anggaran untuk meningkatkan akurasi proyeksi biaya, terutama untuk kategori yang rentan terhadap fluktuasi harga atau volume.
 
 ---
 Angka pada tabel berasal langsung dari KPI engine Python. Interpretasi tidak mengubah nilai tersebut.

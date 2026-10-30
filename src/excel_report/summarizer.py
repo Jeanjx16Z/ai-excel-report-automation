@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -172,6 +173,9 @@ def validate_summary_response(
         if not isinstance(response[field], str) or not response[field].strip():
             raise SummaryValidationError(f"{field} must be a non-empty string")
 
+    def normalize_whitespace(value: str) -> str:
+        return re.sub(r"\s+", " ", value).strip()
+
     validated_lists: dict[str, tuple[str, ...]] = {}
     for field in ("key_findings", "actionable_recommendations"):
         items = response[field]
@@ -179,7 +183,7 @@ def validate_summary_response(
             raise SummaryValidationError(f"{field} must contain 1 to {MAX_ITEMS} items")
         if any(not isinstance(item, str) or not item.strip() for item in items):
             raise SummaryValidationError(f"{field} must contain non-empty strings")
-        validated_lists[field] = tuple(item.strip() for item in items)
+        validated_lists[field] = tuple(normalize_whitespace(item) for item in items)
 
     risks = response["potential_risks"]
     if not isinstance(risks, list) or not 1 <= len(risks) <= MAX_ITEMS:
@@ -198,7 +202,7 @@ def validate_summary_response(
             raise SummaryValidationError("Risk evidence_level must be fact or hypothesis")
         validated_risks.append(
             {
-                "statement": risk["statement"].strip(),
+                "statement": normalize_whitespace(risk["statement"]),
                 "evidence_level": risk["evidence_level"],
             }
         )
@@ -209,11 +213,13 @@ def validate_summary_response(
         )
 
     return ExecutiveSummaryResult(
-        executive_summary=response["executive_summary"].strip(),
+        executive_summary=normalize_whitespace(response["executive_summary"]),
         key_findings=validated_lists["key_findings"],
         potential_risks=tuple(validated_risks),
         actionable_recommendations=validated_lists["actionable_recommendations"],
-        synthetic_data_disclaimer=response["synthetic_data_disclaimer"].strip(),
+        synthetic_data_disclaimer=normalize_whitespace(
+            response["synthetic_data_disclaimer"]
+        ),
         source=source,
     )
 

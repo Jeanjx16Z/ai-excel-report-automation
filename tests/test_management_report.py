@@ -49,6 +49,26 @@ class ManagementReportTests(unittest.TestCase):
                 output_path.read_text(encoding="utf-8"),
             )
 
+    def test_provider_failure_report_keeps_numeric_results_and_safe_status(self) -> None:
+        class FailingClient:
+            def generate(self, payload: dict) -> dict:
+                raise TimeoutError("secret-value must not appear")
+
+        payload = analysis_payload()
+        summary = generate_executive_summary(
+            payload, mode="gemini", client=FailingClient()
+        )
+
+        report = render_management_report(payload, summary)
+
+        self.assertIn("Offline deterministic fallback", report)
+        self.assertIn("api_request_or_response_parse", report)
+        self.assertIn("TimeoutError", report)
+        self.assertNotIn("secret-value", report)
+        self.assertIn("| Total Budget | Rp300 |", report)
+        self.assertIn("| Total Actual Cost | Rp320 |", report)
+        self.assertIn("| Variance | Rp20 |", report)
+
 
 if __name__ == "__main__":
     unittest.main()

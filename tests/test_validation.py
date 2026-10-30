@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -36,6 +37,22 @@ class ValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(InputFileError, "not found"):
             read_excel(Path("missing-input.xlsx"))
 
+    def test_non_xlsx_extension_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            input_path = Path(temporary_directory) / "input.csv"
+            input_path.write_text("not,xlsx", encoding="utf-8")
+
+            with self.assertRaisesRegex(InputFileError, "must use .xlsx"):
+                read_excel(input_path)
+
+    def test_corrupt_workbook_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            input_path = Path(temporary_directory) / "corrupt.xlsx"
+            input_path.write_bytes(b"not an Excel workbook")
+
+            with self.assertRaisesRegex(InputFileError, "Unable to read Excel"):
+                read_excel(input_path)
+
     def test_missing_column_is_rejected(self) -> None:
         dataframe = valid_dataframe().drop(columns="category")
         with self.assertRaisesRegex(DataValidationError, "Missing required columns"):
@@ -59,6 +76,12 @@ class ValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(DataValidationError, "must be numeric"):
             validate_data(dataframe)
 
+    def test_non_numeric_actual_cost_is_rejected(self) -> None:
+        dataframe = valid_dataframe()
+        dataframe["actual_cost"] = ["invalid", "180"]
+        with self.assertRaisesRegex(DataValidationError, "actual_cost.*numeric"):
+            validate_data(dataframe)
+
     def test_negative_value_is_rejected(self) -> None:
         dataframe = valid_dataframe()
         dataframe.loc[0, "budget"] = -1
@@ -76,3 +99,23 @@ class ValidationTests(unittest.TestCase):
         dataframe.loc[0, "category"] = "Safety Equipment"
         with self.assertRaisesRegex(DataValidationError, "Invalid department-category"):
             validate_data(dataframe)
+
+    def test_duplicate_transaction_is_rejected(self) -> None:
+        dataframe = pd.concat([valid_dataframe().iloc[[0]]] * 2, ignore_index=True)
+
+        with self.assertRaisesRegex(DataValidationError, "Duplicate transactions"):
+            validate_data(dataframe)
+
+    def test_dates_and_text_are_normalized_without_mutating_input(self) -> None:
+        dataframe = valid_dataframe()
+        dataframe["date"] = ["2025-01-01", "2025-01-02"]
+        dataframe.loc[0, "department"] = " Mining Operations "
+        dataframe.loc[0, "category"] = " Diesel Fuel "
+        original = dataframe.copy(deep=True)
+
+        validated = validate_data(dataframe)
+
+        self.assertEqual("Mining Operations", validated.loc[0, "department"])
+        self.assertEqual("Diesel Fuel", validated.loc[0, "category"])
+        self.assertTrue(pd.api.types.is_datetime64_any_dtype(validated["date"]))
+        pd.testing.assert_frame_equal(original, dataframe)

@@ -5,7 +5,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from excel_report.management_report import export_management_report
+from excel_report.management_report import (
+    export_management_report,
+    export_management_workbook,
+)
 from excel_report.models import (
     DataValidationError,
     InputFileError,
@@ -20,6 +23,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT_PATH = REPOSITORY_ROOT / "data" / "raw" / "accounting_sample.xlsx"
 DEFAULT_OUTPUT_DIR = REPOSITORY_ROOT / "data" / "processed"
 DEFAULT_REPORT_PATH = REPOSITORY_ROOT / "reports" / "management_report.md"
+DEFAULT_EXCEL_REPORT_PATH = REPOSITORY_ROOT / "reports" / "management_report.xlsx"
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -41,6 +45,12 @@ def parse_arguments() -> argparse.Namespace:
         default="offline",
         help="Summary mode. Gemini is opt-in; offline is the default.",
     )
+    parser.add_argument(
+        "--excel-report-path",
+        type=Path,
+        default=DEFAULT_EXCEL_REPORT_PATH,
+        help="Excel management report destination.",
+    )
     return parser.parse_args()
 
 
@@ -55,6 +65,11 @@ def main() -> int:
             payload,
             summary,
             arguments.report_path,
+        )
+        excel_report_path = export_management_workbook(
+            payload,
+            summary,
+            arguments.excel_report_path,
         )
     except (
         InputFileError,
@@ -77,6 +92,7 @@ def main() -> int:
     if summary.fallback_reason:
         print(f"Fallback: {summary.fallback_reason}")
     print(f"Management report: {report_path}")
+    print(f"Excel management report: {excel_report_path}")
     return 0
 
 

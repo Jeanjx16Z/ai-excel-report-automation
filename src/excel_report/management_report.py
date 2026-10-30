@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from openpyxl import Workbook
+
 from .models import ExecutiveSummaryResult, ReportExportError
 
 
@@ -133,4 +135,82 @@ def export_management_report(
         raise ReportExportError(
             f"Unable to write management report '{destination}': {error}"
         ) from error
+    return destination
+
+
+def export_management_workbook(
+    payload: dict[str, Any],
+    summary: ExecutiveSummaryResult,
+    output_path: Path,
+) -> Path:
+    """Write numeric KPIs, aggregates, and the validated summary to Excel."""
+    destination = Path(output_path)
+    workbook = Workbook()
+    kpi_sheet = workbook.active
+    kpi_sheet.title = "KPI"
+    kpis = payload["overall_kpis"]
+    kpi_sheet.append(["Metric", "Value"])
+    for label, key in (
+        ("Total Budget", "total_budget"),
+        ("Total Actual Cost", "total_actual_cost"),
+        ("Variance", "variance"),
+        ("Variance %", "variance_pct"),
+        ("Transaction Count", "transaction_count"),
+        ("Over-budget Count", "over_budget_count"),
+        ("Under-budget Count", "under_budget_count"),
+        ("On-budget Count", "on_budget_count"),
+    ):
+        kpi_sheet.append([label, kpis[key]])
+
+    for sheet_name, rows, label_key in (
+        ("Department Summary", payload["department_summary"], "department"),
+        ("Category Summary", payload["category_summary"], "category"),
+    ):
+        worksheet = workbook.create_sheet(sheet_name)
+        worksheet.append(
+            [
+                label_key,
+                "budget",
+                "actual_cost",
+                "variance",
+                "variance_pct",
+                "transaction_count",
+            ]
+        )
+        for row in rows:
+            worksheet.append(
+                [
+                    row[label_key],
+                    row["budget"],
+                    row["actual_cost"],
+                    row["variance"],
+                    row["variance_pct"],
+                    row["transaction_count"],
+                ]
+            )
+
+    summary_sheet = workbook.create_sheet("Executive Summary")
+    summary_sheet.append(["Summary Source", summary.source])
+    summary_sheet.append(["Synthetic Data Disclaimer", summary.synthetic_data_disclaimer])
+    summary_sheet.append(["Executive Summary", summary.executive_summary])
+    if summary.fallback_reason:
+        summary_sheet.append(["Fallback Reason", summary.fallback_reason])
+    for finding in summary.key_findings:
+        summary_sheet.append(["Key Finding", finding])
+    for risk in summary.potential_risks:
+        summary_sheet.append(
+            [f"Potential Risk ({risk['evidence_level']})", risk["statement"]]
+        )
+    for recommendation in summary.actionable_recommendations:
+        summary_sheet.append(["Actionable Recommendation", recommendation])
+
+    try:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        workbook.save(destination)
+    except (OSError, ValueError) as error:
+        raise ReportExportError(
+            f"Unable to write management workbook '{destination}': {error}"
+        ) from error
+    finally:
+        workbook.close()
     return destination

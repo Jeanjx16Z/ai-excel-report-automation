@@ -55,6 +55,9 @@ def validate_data(dataframe: pd.DataFrame) -> pd.DataFrame:
             f"Missing or blank values found in columns: {', '.join(problem_columns)}"
         )
 
+    for column in text_columns:
+        validated[column] = validated[column].str.strip()
+
     parsed_dates = pd.to_datetime(validated["date"], errors="coerce", format="mixed")
     invalid_date_mask = parsed_dates.isna()
     if invalid_date_mask.any():

@@ -27,6 +27,10 @@ backup/recovery, vulnerability management, dan company approval wajib selesai.
 
 ## Upload security
 
+Local slice mengimplementasikan pre-parse ZIP/XML inspection, reject formula/macro/external link, serta
+sheet/row/column/size limits di API adapter. Core Phase 1 tidak diubah. Detail enforcement dan batas tanpa
+hard parser timeout/sandbox ada pada [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
+
 - Allowlist `.xlsx`; reject `.xlsm`, encrypted, corrupt, macro-enabled, dan unexpected content.
 - Validasi extension, MIME, ZIP signature/structure, workbook parser result, size, row count, sheet count.
 - Random opaque internal filenames; jangan gabungkan user filename ke path/object key.

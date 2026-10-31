@@ -19,8 +19,9 @@ Referensi: [Next.js App Router](https://nextjs.org/docs/app),
 ## Runtime dan compatibility
 
 - Frontend: Node.js versi yang didukung release Next.js terpilih; pin setelah implementation approval.
-- Backend development baseline: Python 3.11.18 sampai compatibility gate selesai.
-- Deployment target: Python 3.12, **belum terbukti kompatibel**.
+- Backend development mendukung Python 3.11.18 dan Python 3.12.16 setelah compatibility gate Phase 2.1 lulus.
+- Deployment target Python 3.12 kompatibel dengan core secara lokal; deployment tetap belum disetujui dan
+  masih memerlukan platform compatibility/benchmark gate.
 - Browser target awal: current stable dan baseline resmi Next.js (Chrome/Edge/Firefox 111+, Safari 16.4+),
   lalu diselaraskan dengan policy perusahaan.
 
@@ -33,7 +34,8 @@ Referensi: [Next.js App Router](https://nextjs.org/docs/app),
 5. Generate Markdown, Excel, PDF, dan structured output.
 6. Bandingkan deterministic KPI fixtures byte/semantic sesuai format.
 7. Benchmark memory, duration, dan bundle.
-8. Baru ubah deployment runtime setelah semua gate lulus.
+8. Compatibility core lokal dinyatakan lulus pada 2026-10-30; deployment runtime baru boleh diubah setelah
+   platform, resource, dan deployment gate terkait juga lulus.
 
 ## Frontend requirements
 
@@ -67,6 +69,10 @@ Referensi: [Next.js App Router](https://nextjs.org/docs/app),
   [private storage](https://vercel.com/docs/vercel-blob/private-storage).
 
 ## Report generation dan AI
+
+Local vertical slice sekarang memakai ReportLab 5.1.0 dan summarizer offline existing untuk PDF dari snapshot
+yang sama dengan Markdown/Excel. Ini keputusan local-only; renderer/cloud runtime production masih harus
+melewati benchmark dan deployment gate. Lihat [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
 
 - Satu `kpi_snapshot` menjadi source semua renderer.
 - Markdown/Excel/PDF adapter tidak mengubah KPI.
@@ -129,6 +135,11 @@ User-controlled text disanitasi per output context. Excel/CSV mencegah formula i
 memuat external asset tak terpercaya.
 
 ## Same-origin session topology
+
+Phase 2.2 mengimplementasikan controlled Next.js route handler dengan fixed backend origin dan server-only
+shared secret, tanpa provider-specific deployment. Public Host divalidasi terhadap frontend origin, bukan
+internal Next request URL; forwarding headers client tidak diteruskan. Local session repository in-memory
+adalah exception development yang diotorisasi pengguna 2026-10-31; durable persistence tetap release gate.
 
 Anonymous cookie adalah first-party terhadap frontend origin. Browser tidak direct-call backend project untuk
 session-bound API. Backend origin bukan authorization mechanism; authorization selalu berasal dari validated

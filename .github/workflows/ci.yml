@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            apps/api/pyproject.toml
+      - name: Install project
+        run: python -m pip install --disable-pip-version-check -e . -e 'apps/api[test]'
+      - name: Compile Python
+        run: python -m compileall -q src tests apps/api
+      - name: Run tests offline
+        run: python -m unittest discover -s tests -v
+      - name: Run API tests in process
+        run: python -m unittest discover -s apps/api/tests -p 'test_*.py' -v
+      - name: Check installed dependencies
+        run: python -m pip check
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
+
+  repository-safety:
+    name: Repository safety
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject tracked local or generated artifacts
+        shell: bash
+        run: |
+          tracked_forbidden="$(git ls-files | grep -E '(^|/)(\.env($|\.)|node_modules/|\.next/|__pycache__/|\.pytest_cache/|htmlcov/|dist/|build/)' | grep -v '^\.env\.example$' || true)"
+          if [ -n "$tracked_forbidden" ]; then
+            echo "$tracked_forbidden"
+            echo "Tracked local environment or generated artifact detected."
+            exit 1
+          fi

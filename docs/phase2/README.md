@@ -3,8 +3,9 @@
 ## Status
 
 **Approved with implementation gates.** Folder ini adalah design baseline web application dan deployment untuk
-melanjutkan core engine Phase 1. Approval hanya mengizinkan implementasi dimulai dari Phase 2.1. Tidak ada
-frontend, API, database, storage, PDF, authentication, atau deployment yang telah diimplementasikan.
+melanjutkan core engine Phase 1. Approval awal mengizinkan implementasi dimulai dari Phase 2.1.
+Status implementasi lokal tercatat di bawah dan pada [local vertical slice](LOCAL_VERTICAL_SLICE.md).
+Durable database, provider-backed storage, production authentication, dan deployment belum tersedia.
 
 ## Approval note
 
@@ -103,6 +104,49 @@ kompatibel dengan fixture dan test Phase 1.
   dibuktikan melalui proof of concept.
 - Final human review menyetujui Phase 2.0 sebagai design baseline dengan implementation gates. Authorization
   hanya mencakup Phase 2.1; seluruh milestone berikutnya tetap tunduk pada dependency dan Proposed decision gate.
+
+## Phase 2.1 implementation status
+
+Phase 2.1 telah diimplementasikan dan diverifikasi secara lokal pada 2026-10-30:
+
+- existing core lulus 37/37 tests pada Python 3.11.18 dan Python 3.12.16;
+- package `excel_report` dapat di-install editable dan di-import tanpa application-level `sys.path` mutation;
+- offline CLI dan semantic JSON/CSV/Markdown/Excel comparison mempertahankan KPI baseline;
+- Next.js 16 App Router + strict TypeScript foundation lulus typecheck, lint, dan production build;
+- CI menyediakan matrix Python 3.11/3.12 dan frontend checks tanpa deployment atau secret;
+- Phase 2.1 tidak menambahkan API, database, storage, auth, session, provider integration, atau deployment.
+
+Hasil gate ini tidak mengubah batas approval: data tetap synthetic-only, production deployment belum
+disetujui, dan Phase 2.2 belum otomatis diotorisasi tanpa instruksi berikutnya.
+
+## Phase 2.2 implementation status — 2026-10-31
+
+Instruksi pengguna 2026-10-31 secara eksplisit mengotorisasi foundation Phase 2.2 dan session repository
+in-memory lokal sambil menunggu provider PostgreSQL. Perubahan Phase 2.1 yang belum di-commit dipertahankan.
+
+- Factory FastAPI, config tervalidasi tanpa dotenv, DI, safe errors, request ID, safe log fields, core adapter.
+- Endpoint health dan bootstrap/current/rotate/revoke session saja; tidak ada upload/report/history/PDF API.
+- Controlled Next.js same-origin proxy dengan service secret, fixed target, host/origin checks, header
+  allowlist, cookie/CSRF/status/stream forwarding, dan no-redirect policy.
+- Session token/CSRF hash-only, expiry/revocation, rotation/fixation guard, ownership isolation `404`.
+- Local evidence: Phase 1 37/37 serta API 27/27 tests pada Python 3.11.18 dan 3.12.16; pip check isolated lulus.
+  Proxy tests 7/7, typecheck/lint/build lulus. HTTP smoke localhost melalui Next.js health/session lulus.
+- Browser verification belum dilakukan. GitHub CI belum dijalankan; workflow baru direview/disiapkan lokal.
+- Durable session PostgreSQL, multi-instance/serverless safety, provider PoC, abuse controls, deployment
+  validation, dan production security gates tetap belum selesai. `production` ditolak saat startup.
+
+Gate lokal Phase 2.2 terverifikasi dengan keterbatasan di atas. Ini tidak mengotorisasi implementasi milestone
+selanjutnya, real confidential data, atau deployment. Kontrak session tambahan ada pada
+[`BACKEND_API_SPEC.md`](BACKEND_API_SPEC.md); command pada [`../../apps/api/README.md`](../../apps/api/README.md).
+
+## Local vertical slice — hasil implementasi
+
+Instruksi pengguna berikutnya mengotorisasi UX lokal Excel sintetis ke PDF. Endpoint intent/limited local
+upload/complete/report/detail/download, UI Indonesia, template aman, dan PDF offline sudah diimplementasikan.
+Browser Chrome lokal memverifikasi file 120 baris, KPI, PDF download, layout 390px, dan invalid workbook.
+PDF dua halaman dirender/diperiksa visual: angka utuh, header tabel berulang, footer dan teks tidak terpotong.
+Kontrak, command PowerShell, cleanup, serta batas lokal ada pada [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
+Approval ini tidak mengganti provider-backed architecture atau production/deployment gates.
 
 ## Referensi resmi utama
 

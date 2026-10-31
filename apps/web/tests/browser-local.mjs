@@ -1,0 +1,61 @@
+// Opt-in manual verification only; never included in npm test or CI.
+import assert from "node:assert/strict";
+import { existsSync, mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
+import { resolve } from "node:path";
+
+const require = createRequire(import.meta.url);
+const { chromium } = require(resolve(".runtime/browser/node_modules/playwright-core"));
+const base = process.argv[2];
+assert.ok(base && new URL(base).protocol === "http:" && ["127.0.0.1", "localhost"].includes(new URL(base).hostname));
+const executablePath = ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].find(existsSync);
+assert.ok(executablePath, "A local Chrome/Edge installation is required");
+const output = resolve(".runtime/verification");
+mkdirSync(output, { recursive: true });
+const browser = await chromium.launch({ executablePath, headless: true, args: ["--disable-background-networking", "--disable-sync", "--disable-component-update", "--no-first-run"] });
+try {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
+  await context.route("**/*", (route) => new URL(route.request().url()).origin === base ? route.continue() : route.abort());
+  const page = await context.newPage();
+  const errors = [];
+  const consoleErrors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (event) => { if (event.type() === "error") consoleErrors.push(event.text()); });
+  await page.goto(base, { waitUntil: "networkidle" });
+  assert.ok(await page.getByText("Hanya data sintetis.", { exact: true }).isVisible());
+  const templateEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Unduh Template Sintetis" }).click();
+  const template = await templateEvent;
+  await template.saveAs(resolve(output, "browser_template.xlsx"));
+  await page.locator("#workbook").setInputFiles(resolve("data/raw/accounting_sample.xlsx"));
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Buat Laporan", exact: true }).click();
+  await page.getByRole("link", { name: "Unduh PDF", exact: true }).waitFor({ timeout: 60000 });
+  assert.ok(await page.getByText("Rp170.410.000.000", { exact: true }).isVisible());
+  assert.ok(await page.getByText("Rp172.583.200.000", { exact: true }).isVisible());
+  assert.ok(await page.getByText("1.28%", { exact: true }).isVisible());
+  const pdfEvent = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Unduh PDF", exact: true }).click();
+  const pdf = await pdfEvent;
+  await pdf.saveAs(resolve(output, "browser_report.pdf"));
+  assert.equal(await pdf.failure(), null);
+  await page.screenshot({ path: resolve(output, "browser-result.png"), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+  await page.screenshot({ path: resolve(output, "browser-mobile.png"), fullPage: true });
+  await page.getByRole("button", { name: "Proses File Lain", exact: true }).click();
+  await page.locator("#workbook").setInputFiles({ name: "invalid.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: Buffer.from("corrupt synthetic workbook") });
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Buat Laporan", exact: true }).click();
+  const validationAlert = page.locator('.error-box[role="alert"]');
+  await validationAlert.waitFor();
+  await page.screenshot({ path: resolve(output, "browser-invalid.png"), fullPage: true });
+  const validationMessage = await validationAlert.innerText();
+  assert.ok(validationMessage.includes("Workbook tidak valid"), validationMessage);
+  assert.equal(errors.length, 0, "Uncaught browser errors");
+  assert.ok(consoleErrors.every((message) => message.includes("422")), "Unexpected console errors");
+  console.log(`Browser PASS: template, actual Excel upload, KPI, offline summary, PDF download, responsive 390px, invalid workbook; uncaught errors: ${errors.length}; expected invalid-file console errors: ${consoleErrors.length}`);
+  await context.close();
+} finally {
+  await browser.close();
+}

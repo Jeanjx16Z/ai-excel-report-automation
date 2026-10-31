@@ -2,6 +2,11 @@
 
 ## Principles
 
+Local vertical slice memakai dataclass upload/job/replay dan dictionary terkunci dalam satu proses; private
+input/artifact disimpan di filesystem runtime ignored. Belum ada schema migration/provider PostgreSQL.
+Model relational berikut tetap target durable implementation. Snapshot API lokal memakai decimal strings,
+count integer, dan server-generated opaque IDs. Policy: [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
+
 PostgreSQL menyimpan state, metadata, ownership, aggregate snapshot, dan audit; bukan calculator. UUID menjadi
 external ID. Secret, upload/download token, dan API key tidak disimpan. Setiap owner memakai check constraint
 XOR antara `user_id` dan `anonymous_session_id`.
@@ -35,6 +40,10 @@ NULL`, timestamps, `disabled_at`. FK report memakai `ON DELETE RESTRICT`; deacti
 delete. `external_subject` tidak masuk log.
 
 ## `anonymous_sessions`
+
+Target tabel berikut tetap untuk PostgreSQL. Phase 2.2 memakai `SessionRepository` dan implementation in-memory
+lokal yang menyimpan owner UUID internal, token/CSRF hash, expiry dan revocation; tidak ada migration/provider
+database. State hilang saat restart. Penyimpanan durable dan constraint database tetap gate sebelum release.
 
 | Field | Type | Constraint |
 |---|---|---|

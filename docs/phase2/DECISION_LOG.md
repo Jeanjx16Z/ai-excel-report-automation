@@ -34,8 +34,13 @@ bahwa implementasi/deployment tersedia.
 | D-027 | Idempotency replay | Approved | Owner+operation scoped key mereplay original safe completed/failed result; conflict/in-progress adalah stable 409 | Hindari duplicate processing dan retry ambigu | Record retention configurable; retry failure perlu key dan upload baru | Idempotency contract tests | TBD |
 | D-028 | Cleanup executor | Proposed | Scheduled job/cron, durable workflow, atau approved worker | Deletion/expiration durable terpisah dari report processing | Automatic retention/public demo release diblokir sampai dipilih dan diuji | Partial-delete/reconciler rehearsal | TBD |
 | D-029 | Phase 2.0 design approval | Approved | Phase 2.0 design baseline disetujui untuk memulai Phase 2.1 saja | Final human review menerima desain dengan implementation gates | Tidak mengizinkan confidential production data atau production release; semua Proposed decision tetap menjadi gate bagi milestone terkait | Final human documentation review completed | Human reviewer |
+| D-030 | Local Excel-to-PDF vertical slice | Approved | Local private adapter + in-memory metadata + offline summary + ReportLab 5.1.0 untuk demo lokal | Instruksi eksplisit pengguna untuk membuktikan UX lengkap | API body upload hanya lokal; direct cloud upload, durable DB/history, production renderer dan deployment tetap bergate | Local API/browser smoke, PDF extraction dan visual review | Project owner |
 
 ## Review rule
+
+Tambahan kontrak implementasi lokal 2026-10-31: pengguna mengotorisasi Phase 2.2 dan in-memory session untuk
+local/unit synthetic development. Bootstrap/current/rotation/revocation session ditambahkan eksplisit pada
+API spec. Ini tidak mengganti target PostgreSQL, production gates, atau keputusan Proposed provider.
 
 Perubahan keputusan harus menambah row baru atau mengubah status dengan rationale; jangan diam-diam mengubah
 Approved contract. Provider/quota/retention/PDF/auth/queue/monitoring/production AI tetap Proposed sampai

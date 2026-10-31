@@ -33,6 +33,11 @@ diakses melalui history/status/delete oleh owner/session yang sama.
 | Code | HTTP |
 |---|---:|
 | `INVALID_SESSION` | 401 |
+| `UNTRUSTED_PROXY` | 403 |
+| `CSRF_REJECTED` | 403 |
+| `INVALID_REQUEST` | 422 |
+| `NOT_FOUND` | 404 |
+| `METHOD_NOT_ALLOWED` | 405 |
 | `UPLOAD_INTENT_EXPIRED` | 410 |
 | `UPLOAD_NOT_FOUND` | 404 |
 | `UPLOAD_NOT_READY` | 409 |
@@ -60,6 +65,37 @@ mengirim `anonymous_session_id` dalam body dan tidak menyimpan token di `localSt
 creation/policy event untuk mencegah fixation. Mutating request memakai CSRF protection bila cookie digunakan.
 Expired session kehilangan akses history kecuali future migration ke authenticated account tersedia.
 
+### Phase 2.2 local session lifecycle — explicit contract addition (2026-10-31)
+
+Foundation lokal menyediakan `GET /api/v1/health`, `POST|GET|DELETE /api/v1/session`, dan
+`POST /api/v1/session/rotate`. Endpoint upload/report di bawah tetap future contract, belum diimplementasikan.
+
+- `GET /health`: `200 {"status":"ok"}`, tanpa session creation atau detail konfigurasi.
+- `POST /session`: body `{}`, exact frontend Origin + JSON; `201` dengan `active`, `expires_at`, `csrf_token`
+  dan cookie. Body owner/session ID ditolak. Cookie tidak dikenal/expired/revoked menghasilkan `401` dan
+  tidak diadopsi. Bootstrap dengan cookie valid wajib CSRF dan me-rotate token.
+- `GET /session`: cookie wajib, `200` dengan `active`/`expires_at` atau `401`. Tidak mengirim owner ID/token.
+- `POST /session/rotate`: body `{}`, cookie dan `X-CSRF-Token`, exact Origin; `200` dengan CSRF/cookie baru.
+  Owner internal tetap sama; token lama dicabut atomik dan expiry absolut tidak diperpanjang.
+- `DELETE /session`: cookie, CSRF, exact Origin; `204`, server revocation dan cookie deletion.
+
+Cookie host-only `mining_session`, `HttpOnly`, `SameSite=Lax`, `Path=/api/v1`, `Secure` default true,
+bounded Max-Age. Local HTTP loopback boleh `Secure=false` hanya melalui konfigurasi eksplisit.
+Token session/CSRF masing-masing 32 random bytes; repository hanya menyimpan hash SHA-256. Default TTL lokal
+3600 detik (batas 60–86400), bukan keputusan retention report. CSRF hanya tersedia saat issuance/rotation dan
+disimpan di memory client; kehilangan CSRF memerlukan clear cookie/bootstrap baru dan kehilangan akses owner
+lama. Unknown/expired/revoked cookie harus dibersihkan sebelum bootstrap baru.
+
+Seluruh endpoint memerlukan `X-API-Proxy-Secret` dari controlled Next.js server. Request tanpa secret,
+host/origin tidak diizinkan, dan forwarding header spoofing ditolak. Proxy target dari konfigurasi server,
+bukan input client; public Host divalidasi karena internal Next URL dapat berbeda. Proxy meneruskan request ID,
+status, error, cookie/CSRF dan stream; tidak mengikuti redirect upstream. Mutating cookie request memerlukan
+CSRF selain service secret/Origin. Secret tidak memakai `NEXT_PUBLIC_*` dan tidak diteruskan ke client.
+
+Repository in-memory Phase 2.2 khusus local single process; restart menghapus session. Ini bukan implementasi
+PostgreSQL durable session pada target desain, bukan multi-instance release, dan production mode fail closed.
+Tidak ada `report_id` pada error foundation karena belum ada report job.
+
 ## KPI schema
 
 ```json
@@ -81,6 +117,14 @@ Summary row memakai bentuk yang sama untuk monetary/percentage/count. Label `dep
 dikembalikan setelah classification policy.
 
 ## Direct upload protocol
+
+**Local implementation addendum:** prototype menyediakan `GET /api/v1/template`, explicit new-owner
+`POST /api/v1/session/reset` dengan `reset_ack=true`, serta `PUT /api/v1/uploads/{upload_id}/content` sebagai
+storage transport lokal. Instruction memiliki target relatif dan header short-lived capability, bukan object
+key. Session/proxy/CSRF wajib. Local binary body melalui Next.js/FastAPI maksimum 10 MiB; ini tidak membuktikan
+provider direct upload/Vercel. Create report hanya menerima `summary_mode=offline`; GET detail dan download
+`pdf|markdown|excel` tersedia, tanpa history list/delete endpoint. Replay dan safe report_id mengikuti kontrak
+di bawah. Detail resource/cleanup/schema/renderer pada [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
 
 Storage adapter menerjemahkan limited upload instruction provider-neutral menjadi mekanisme provider aktual.
 Desain tidak mengasumsikan API Vercel Blob/provider lain tersedia sebelum proof of concept.

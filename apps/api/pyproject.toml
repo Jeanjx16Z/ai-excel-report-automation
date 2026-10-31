@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mining-report-api"
+version = "0.1.0"
+description = "Synthetic-only local FastAPI foundation for mining cost reports."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "ai-excel-report-automation==0.2.0",
+    "fastapi==0.162.0",
+    "uvicorn==0.41.0",
+    "pydantic==2.14.2",
+    "reportlab==5.1.0",
+]
+
+[project.optional-dependencies]
+test = ["httpx==0.28.1", "pypdf==6.21.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

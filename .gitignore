@@ -15,6 +15,8 @@ downloads/
 eggs/
 .eggs/
 lib/
+!apps/web/lib/
+!apps/web/lib/**
 lib64/
 parts/
 sdist/
@@ -151,6 +153,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 .venv/
@@ -224,3 +228,21 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Frontend dependencies and generated output
+node_modules/
+.next/
+apps/web/out/
+apps/web/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript incremental build metadata
+*.tsbuildinfo
+
+# Project-local temporary artifacts
+.runtime/
+tmp/
+temp/
+*.bak

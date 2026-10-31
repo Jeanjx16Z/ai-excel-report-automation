@@ -4,9 +4,13 @@ Otomatisasi laporan biaya operasional pertambangan berbasis Excel menggunakan Py
 
 ## Prasyarat
 
-- Python 3.11
+**Website lokal Excel → PDF sudah tersedia.** Panduan dua terminal PowerShell, template, dan cleanup:
+[Local vertical slice](docs/phase2/LOCAL_VERTICAL_SLICE.md). Synthetic/dummy data only; belum production-ready.
+
+- Python 3.11 atau 3.12
 - `pip`
 - Anaconda atau Miniconda (direkomendasikan untuk environment terisolasi)
+- Node.js 22.16.0 dan npm 10 untuk frontend Phase 2
 
 ## Setup dengan Conda
 
@@ -22,6 +26,32 @@ Jika environment sudah dibuat, sinkronkan dependency dengan:
 ```powershell
 conda run -n ai-excel-automation python -m pip install -r requirements.txt
 ```
+
+`requirements.txt` mempertahankan kompatibilitas workflow lama dan mendelegasikan dependency runtime ke
+`pyproject.toml` agar pin tidak diduplikasi. Test suite memakai `unittest` dari standard library sehingga saat
+ini tidak ada dependency test tambahan.
+
+Untuk development package yang eksplisit, gunakan editable install dari root repository:
+
+```powershell
+conda run -n ai-excel-automation python -m pip install -e .
+conda run -n ai-excel-automation python -c "import excel_report; print('excel_report import OK')"
+```
+
+### Compatibility environment Python 3.12
+
+Environment terpisah menjaga baseline Python 3.11 tetap tersedia:
+
+```powershell
+conda env create -f environment-py312.yml
+conda run -n ai-excel-automation-py312 python -m pip install -e .
+conda run -n ai-excel-automation-py312 python -m compileall -q src tests
+conda run -n ai-excel-automation-py312 python -m unittest discover -s tests -v
+```
+
+Python 3.11 dan 3.12 didukung selama transition gate Phase 2. Runtime deployment belum disetujui.
+`environment.yml` mempertahankan baseline 3.11, sedangkan `environment-py312.yml` adalah gate 3.12; keduanya
+memakai `requirements.txt` yang merujuk satu dependency source di `pyproject.toml`.
 
 Verifikasi interpreter dan SDK Gemini:
 
@@ -167,6 +197,85 @@ Milestone 4 terakhir menghasilkan 37 test lulus.
 python -m compileall -q src tests
 ```
 
+## Struktur Phase 2
+
+```text
+apps/web/          Next.js App Router foundation; tidak menghitung KPI
+apps/api/          FastAPI health/session foundation; single-process local synthetic development
+src/excel_report/  Numerical core Python/Pandas dan source of truth KPI
+tests/             Regression tests Phase 1
+```
+
+Dependency direction:
+
+```text
+apps/web -> versioned HTTP API pada Phase 2.2+
+apps/api -> future application services/adapters -> excel_report
+excel_report -> tidak bergantung pada web, FastAPI, database, storage, atau infrastructure provider
+```
+
+### Frontend pada Windows PowerShell
+
+Node version repository tercatat pada `.nvmrc`. Dari root repository:
+
+```powershell
+Set-Location apps/web
+npm ci
+$env:PORT = '3000'
+npm run dev:local
+```
+
+Pemeriksaan frontend:
+
+```powershell
+npm run typecheck
+npm run lint
+npm run build
+```
+
+`dev:local` menetapkan hostname `localhost` di script dan port melalui environment `PORT` (default Next.js
+3000), sehingga tidak bergantung pada penerusan opsi dari PowerShell ke npm. Setelah build, gunakan `npm run start:local` untuk server lokal
+production build. Hentikan server dengan `Ctrl+C`. Konfigurasi backend/proxy tetap mengikuti panduan slice lokal.
+
+Website kini menyediakan upload sintetis, hasil KPI/ringkasan offline, serta download PDF/Markdown/Excel.
+Tidak ada secret pada client,
+Gemini SDK, Vercel AI SDK, database/storage/auth library, chart, embedding, vector database, atau RAG dependency.
+
+## Continuous Integration
+
+Workflow `.github/workflows/ci.yml` dikonfigurasi untuk pull request dan push ke `main` dengan permissions read-only.
+Workflow lokal ini belum di-push/dijalankan di GitHub, sehingga belum ada klaim GitHub CI green:
+
+- Python 3.11/3.12: core/API editable install, compile check, regression/API tests, dan pip check;
+- frontend: `npm ci`, proxy tests, typecheck (termasuk Next typegen), lint, dan production build;
+- repository safety: menolak `.env`, cache, dependency directory, dan build output yang ter-track.
+
+Workflow tidak melakukan deployment, tidak memanggil Gemini, dan tidak memakai repository secret.
+
+## Backend foundation Phase 2.2
+
+Panduan konfigurasi environment PowerShell, backend/frontend development, health melalui same-origin proxy,
+session bootstrap/rotation, tests, dan smoke tersedia pada [apps/api/README.md](apps/api/README.md).
+Dependency backend dipisah pada `apps/api/pyproject.toml`; core dan CLI Phase 1 tetap kompatibel.
+
+```powershell
+conda run -n ai-excel-automation-py312 python -s -m pip install -e . -e 'apps/api[test]'
+conda run -n ai-excel-automation-py312 python -s -m unittest discover -s apps/api/tests -p 'test_*.py' -v
+```
+
+## Batasan Phase 2.1 dan 2.2
+
+Phase 1 local CLI tetap tersedia. Phase 2.1 hanya menambahkan runtime compatibility, packaging, monorepo
+boundary, frontend statis, dan CI foundation. Phase 2.2 menambah FastAPI health, session in-memory lokal,
+safe errors, dan controlled same-origin proxy. Slice lokal berikutnya menambah upload/report API, private local
+filesystem adapter, dan PDF. Durable database, provider-backed object storage, production authentication/RBAC,
+history, background worker, dan deployment belum tersedia. Session/metadata hilang saat restart; production
+mode ditolak. Persistensi PostgreSQL tetap implementation gate berikutnya.
+
+Demo tetap hanya menggunakan data sintetis. Real confidential atau personal company data dilarang sampai
+seluruh production security gate disetujui dan diimplementasikan. Embedding, vector database, dan RAG tidak
+digunakan serta berada di luar scope Phase 2.
+
 ## Batasan MVP
 
 MVP mencakup input Excel `.xlsx`, validasi dan cleaning terkontrol, KPI deterministik,
@@ -174,5 +283,5 @@ output JSON/CSV, laporan Markdown dan Excel, serta interpretasi Gemini opsional 
 structured output dan fallback. Python/Pandas tetap menjadi satu-satunya sumber kebenaran
 angka; Gemini hanya menerima agregat dan tidak menerima transaksi mentah.
 
-AI Agent, tool calling, n8n, PDF, web interface, FastAPI, Next.js, authentication,
-database, Docker, dan deployment belum termasuk dalam MVP.
+AI Agent, tool calling, n8n, database, Docker, dan deployment tidak termasuk MVP Phase 1.
+Phase 2 menambahkan web/FastAPI/PDF lokal; production auth dan cloud services tetap belum tersedia.

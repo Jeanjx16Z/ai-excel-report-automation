@@ -2,6 +2,10 @@
 
 ## Target demo topology
 
+Local Excel-to-PDF slice belum di-deploy. Ia memakai filesystem/in-memory dan upload API body hanya pada
+localhost. Jangan memakai konfigurasi ini pada serverless/public release; kontrak deployed direct storage di
+bawah tetap belum diimplementasikan. Setup dan manual cleanup: [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
+
 - Next.js frontend pada Vercel project terpisah.
 - FastAPI pada Vercel Python Functions **hanya jika** runtime/limits/benchmark gate lulus.
 - Satu monorepo/repository, dua project dengan root/build configuration independen.

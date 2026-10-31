@@ -117,6 +117,12 @@ sequenceDiagram
 
 ## Synchronous v1
 
+Implementasi vertical slice lokal mempertahankan urutan intent → limited upload → completion → synchronous
+report → detail/download, dengan local private filesystem adapter dan in-memory metadata. Limited PUT lokal
+melalui body Next.js/FastAPI; bukan provider direct upload dan bukan bukti kelayakan upload 10 MB Vercel.
+PDF/Markdown/Excel memakai core snapshot + offline summary. Batas cleanup, session reset, dan deployment ada
+pada [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md); diagram provider-backed di atas tetap target desain.
+
 Dataset kecil diproses dalam request yang tetap terbuka setelah verified `upload_id` berstatus `ready`. Sukses
 mengembalikan `201 completed`; validation/business failure menyimpan `failed` dan mengembalikan safe error.
 Frontend menampilkan indeterminate loading, bukan realtime intermediate state. Status endpoint hanya untuk

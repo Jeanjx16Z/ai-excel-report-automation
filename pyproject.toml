@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-excel-report-automation"
+version = "0.2.0"
+description = "Deterministic synthetic mining operational cost reporting core."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "Project contributors" }]
+dependencies = [
+    "pandas==3.1.0",
+    "openpyxl==3.1.5",
+    "python-dotenv==1.2.4",
+    "google-genai==2.33.0",
+]
+
+[project.scripts]
+excel-report-analyze = "analyze_costs:main"
+excel-report-generate-sample = "generate_sample_data:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+py-modules = ["analyze_costs", "generate_sample_data"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["excel_report*"]

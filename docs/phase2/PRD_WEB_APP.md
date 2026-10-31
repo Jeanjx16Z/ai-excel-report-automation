@@ -105,6 +105,10 @@ Kontrak **Current Phase 1**:
 Pembatasan one logical dataset, encrypted/macro rejection, formula/external-link inspection, sheet count, dan
 resource limits adalah Proposed Phase 2 hardening dan tidak boleh diklaim sebagai perilaku core saat ini.
 
+Local vertical slice kini menerapkan hardening tersebut pada API adapter saja (bukan perubahan core),
+dengan private filesystem dan PDF offline. Status lokal tidak memenuhi provider-backed deployment atau
+production data gate; lihat [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
+
 ## Public demo abuse controls
 
 Proposed controls: rate limit per-IP/per-session, active-job limit, stored-report limit, daily processing quota,

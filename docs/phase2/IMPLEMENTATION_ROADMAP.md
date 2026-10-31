@@ -27,6 +27,10 @@ setelah Phase 2.0 disetujui.
 
 ## Phase 2.2 — FastAPI dan minimum session foundation
 
+**Local implementation evidence (2026-10-31):** health/session/proxy/core-adapter tests lulus lokal; session
+in-memory diizinkan eksplisit pengguna untuk foundation single-process. PostgreSQL durability, browser E2E,
+GitHub CI run dan deploy-build target belum dibuktikan. Milestone berikutnya tidak otomatis dimulai.
+
 - **Goal:** API skeleton modular dengan ownership minimum sebelum endpoint data dibuat.
 - **Scope/files:** app factory, `/api/v1`, config, error model, health, core adapter, same-origin Next.js
   rewrite/proxy, serta minimum anonymous session: high-entropy server token, `HttpOnly`/`Secure`/
@@ -43,6 +47,12 @@ setelah Phase 2.0 disetujui.
 - **Risk:** serverless framework/runtime mismatch. **Complexity:** Medium.
 
 ## Phase 2.3 — Upload and report API prototype
+
+**Penyesuaian lokal yang diotorisasi:** Local vertical slice memakai local private storage adapter untuk
+membuktikan UX Excel-to-PDF. Provider-backed direct upload, durable database, history, dan deployment belum
+selesai. Transport upload lokal melalui same-origin API body, bukan solusi 10 MB Vercel. Local PDF memakai
+ReportLab; keputusan renderer/provider production tetap memiliki gate tersendiri. Lihat
+[`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
 
 - **Goal:** membuktikan synthetic Excel menjadi Markdown/Excel melalui API dengan fake AI.
 - **Scope:** upload intent/complete, provider-neutral limited instruction, direct private upload, synchronous

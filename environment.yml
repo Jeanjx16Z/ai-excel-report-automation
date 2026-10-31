@@ -2,6 +2,8 @@ name: ai-excel-automation
 channels:
   - defaults
 dependencies:
+  # Use 3.11 for the established environment. Python 3.12 is verified separately in
+  # ai-excel-automation-py312 and is also supported by pyproject.toml.
   - python=3.11
   - pip
   - pip:

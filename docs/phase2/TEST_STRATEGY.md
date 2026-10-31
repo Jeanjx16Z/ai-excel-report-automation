@@ -92,6 +92,11 @@ documented function limits.
 
 ## Quality gates
 
+Local slice menambahkan API tests upload/security/replay/cleanup/PDF, PDF text extraction dengan pypdf,
+dan opt-in browser smoke Chrome menggunakan actual local servers. Browser script bukan bagian dari automated
+unit/API/proxy suite dan tidak mengakses provider. Bukti PDF/PNG tersimpan ignored di `.runtime/verification`.
+Hasil dan command pada [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md); GitHub CI belum dijalankan.
+
 | Milestone | Exit gate |
 |---|---|
 | 2.1 | Python 3.12 compatibility + core regression + CI green |

@@ -156,7 +156,8 @@ conda run -n ai-excel-automation-py312 python -s apps/api/tests/smoke_local.py -
 ```
 
 Smoke memulai/menghentikan kedua server sendiri. Unit/API/proxy tests memakai in-process transport/fake fetch
-tanpa external provider call. GitHub CI baru berupa konfigurasi; belum ada klaim CI GitHub green.
+tanpa external provider call. Checkpoint `6d99798` sudah di-push; keempat job
+[GitHub CI run 1](https://github.com/Jeanjx16Z/ai-excel-report-automation/actions/runs/41209976063) selesai success.
 
 Hasil lokal: Python 3.11.18 dan 3.12.16 masing-masing lulus 37 regression Phase 1 dan 45 API tests;
 compile serta isolated pip check lulus. Frontend 8 proxy tests, typecheck, lint, dan production build lulus.

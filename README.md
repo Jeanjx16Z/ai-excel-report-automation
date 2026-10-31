@@ -244,13 +244,17 @@ Gemini SDK, Vercel AI SDK, database/storage/auth library, chart, embedding, vect
 ## Continuous Integration
 
 Workflow `.github/workflows/ci.yml` dikonfigurasi untuk pull request dan push ke `main` dengan permissions read-only.
-Workflow lokal ini belum di-push/dijalankan di GitHub, sehingga belum ada klaim GitHub CI green:
+Checkpoint `6d99798` sudah di-push; [CI run 1](https://github.com/Jeanjx16Z/ai-excel-report-automation/actions/runs/41209976063)
+selesai **success** untuk keempat job pada 2026-10-31:
 
 - Python 3.11/3.12: core/API editable install, compile check, regression/API tests, dan pip check;
 - frontend: `npm ci`, proxy tests, typecheck (termasuk Next typegen), lint, dan production build;
 - repository safety: menolak `.env`, cache, dependency directory, dan build output yang ter-track.
 
 Workflow tidak melakukan deployment, tidak memanggil Gemini, dan tidak memakai repository secret.
+
+Status persiapan hosted demo, runtime proof Vercel yang terproteksi, dan blocker akun/provider tersedia pada
+[Hosted demo gate](docs/phase2/HOSTED_DEMO_GATE.md). Belum ada URL website demo online yang dirilis.
 
 ## Backend foundation Phase 2.2
 

@@ -148,6 +148,14 @@ PDF dua halaman dirender/diperiksa visual: angka utuh, header tabel berulang, fo
 Kontrak, command PowerShell, cleanup, serta batas lokal ada pada [`LOCAL_VERTICAL_SLICE.md`](LOCAL_VERTICAL_SLICE.md).
 Approval ini tidak mengganti provider-backed architecture atau production/deployment gates.
 
+## Hosted demo audit — 2026-10-31
+
+Pengguna mengotorisasi persiapan/deployment synthetic-only serta checkpoint/push. Checkpoint `6d99798`
+telah di-push; empat job GitHub CI run 1 selesai success. Protected Vercel runtime proof berhasil untuk fixture
+120 baris, tetapi provider PostgreSQL/private storage, distributed controls, cleanup, dan aplikasi preview
+belum tersedia. Pemasangan akun/integrasi Neon Free menunggu izin. Website publik belum dirilis.
+Detail bukti, batas platform, dan gate: [HOSTED_DEMO_GATE.md](HOSTED_DEMO_GATE.md).
+
 ## Referensi resmi utama
 
 - [Next.js App Router](https://nextjs.org/docs/app)
